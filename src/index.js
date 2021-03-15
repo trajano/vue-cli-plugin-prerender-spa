@@ -38,7 +38,7 @@ function chain(api, projectOptions) {
           return userPostProcess(renderedRoute);
         }
       },
-      projectOptions.prerenderOptions
+      ...projectOptions.prerenderOptions
     );
     config.plugin("pre-render").use(PrerenderSPAPlugin, [prerenderOptions]);
     if (process.env.NODE_ENV === "production") {
