@@ -23,20 +23,23 @@ function chain(api, projectOptions) {
     }
     const renderer = createRenderer(api, projectOptions);
     const paths = resolvePaths(api, projectOptions.outputDir, projectOptions.assetsDir);
-    const prerenderOptions = {
-      ...paths,
-      routes: options.renderRoutes,
-      renderer,
-      postProcess: renderedRoute => {
-        const route = renderedRoute.route;
-        if (route[route.length - 1] !== "/" && extname(route) === "") {
-          renderedRoute.outputPath = join(paths.outputDir || paths.staticDir, `${route}.html`);
+    const prerenderOptions = Object.assign(
+      {
+        ...paths,
+        routes: options.renderRoutes,
+        renderer,
+        postProcess: renderedRoute => {
+          const route = renderedRoute.route;
+          if (route[route.length - 1] !== "/" && extname(route) === "") {
+            renderedRoute.outputPath = join(paths.outputDir || paths.staticDir, `${route}.html`);
+          }
+          const userPostProcess =
+            options.postProcess && typeof options.postProcess === "function" ? options.postProcess : noop;
+          return userPostProcess(renderedRoute);
         }
-        const userPostProcess =
-          options.postProcess && typeof options.postProcess === "function" ? options.postProcess : noop;
-        return userPostProcess(renderedRoute);
-      }
-    };
+      },
+      projectOptions.prerenderOptions
+    );
     config.plugin("pre-render").use(PrerenderSPAPlugin, [prerenderOptions]);
     if (process.env.NODE_ENV === "production") {
       config.plugin("html").tap(args => {
