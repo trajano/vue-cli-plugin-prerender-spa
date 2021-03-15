@@ -38,7 +38,7 @@ function chain(api, projectOptions) {
           return userPostProcess(renderedRoute);
         }
       },
-      projectOptions.prerenderOptions
+      projectOptions?.pluginOptions?.prerenderOptions
     );
     console.log(prerenderOptions);
     config.plugin("pre-render").use(PrerenderSPAPlugin, [prerenderOptions]);
