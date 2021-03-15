@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "babel src --out-dir .",
-    "prepack": "babel src --out-dir ."
+    "prepare": "babel src --out-dir ."
   },
   "license": "MIT",
   "repository": "https://github.com/SolarLiner/vue-cli-plugin-prerender-spa",
