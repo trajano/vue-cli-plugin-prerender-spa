@@ -8,7 +8,6 @@
     "email": "solarliner@gmail.com"
   },
   "scripts": {
-    "build": "babel src --out-dir .",
     "prepare": "babel src --out-dir ."
   },
   "license": "MIT",
