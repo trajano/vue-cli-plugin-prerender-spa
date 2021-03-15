@@ -3,6 +3,20 @@ import { exists, existsSync, readFileSync } from "fs";
 import { extname, join, basename } from "path";
 
 import PrerenderSPAPlugin, { PuppeteerRenderer } from "prerender-spa-plugin";
+
+/**
+ * @typedef {object} PluginOptions
+ * @property {*} [useRenderEvent]
+ * @property {*} [customRendererConfig]
+ * @property {*} [prerenderOptions]
+ * @property {*} [renderRoutes]
+ * @property {*} [postProcess]
+ * @property {boolean} [headless]
+ * @property {boolean} [disable]
+ * @property {boolean} [parallel]
+ * @property {boolean} [onlyProduction]
+ */
+
 const Renderer = PuppeteerRenderer;
 
 const CONFIG_OBJ_PATH = "pluginOptions.prerenderSpa";
@@ -38,9 +52,8 @@ function chain(api, projectOptions) {
           return userPostProcess(renderedRoute);
         }
       },
-      projectOptions?.pluginOptions?.prerenderOptions
+      projectOptions?.pluginOptions?.prerenderSpa?.prerenderOptions
     );
-    console.log(prerenderOptions);
     config.plugin("pre-render").use(PrerenderSPAPlugin, [prerenderOptions]);
     if (process.env.NODE_ENV === "production") {
       config.plugin("html").tap(args => {
@@ -99,7 +112,16 @@ function createRendererConfig(api, projectOptions) {
   return rendererConfig;
 }
 
+/**
+ *
+ * @param {*} api
+ * @param {*} projectOptions
+ * @returns {PluginOptions}
+ */
 function createPluginOptions(api, projectOptions) {
+  /**
+   * @type {PluginOptions}
+   */
   let options = {}; // Fixes Object.assign error if there's no 'pluginOptions.prerenderSpa' in vue.config.js
   let oldConfigPath = api.resolve(".prerender-spa.json");
   try {
@@ -112,7 +134,7 @@ function createPluginOptions(api, projectOptions) {
       options = JSON.parse(readFileSync(oldConfigPath).toString("utf-8"));
     }
   }
-  if(Object.entries(options).length === 0) return undefined // No options at all, therefore don't return any options.
+  if (Object.entries(options).length === 0) return undefined // No options at all, therefore don't return any options.
   // return options; // TODO: Fix #16 permanently
   return Object.assign(options, { onlyProduction: true }); // Force disable on development build, workaround for #16
 }
